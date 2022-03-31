@@ -20,6 +20,11 @@
       },
       "Talon FX[7]/Integrated Sensor": {
         "name": "Back Left Drive"
+      },
+      "navX-Sensor[0]": {
+        "header": {
+          "open": true
+        }
       }
     }
   },
@@ -30,6 +35,9 @@
       "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
       "/LiveWindow/Ungrouped/DigitalInput[3]": "Digital Input",
+      "/LiveWindow/Ungrouped/Gyro w/ Offset[0]": "Gyro",
+      "/LiveWindow/Ungrouped/Gyro-w/-Offset[0]": "Gyro",
+      "/LiveWindow/Ungrouped/Gyro-w/-Offset[1]": "Gyro",
       "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
@@ -46,13 +54,29 @@
       "/LiveWindow/Ungrouped/Talon FX [9]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon SRX [15]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon SRX [18]": "Motor Controller",
+      "/LiveWindow/Ungrouped/navX-Sensor w/ Offset[0]": "Gyro",
       "/LiveWindow/Ungrouped/navX-Sensor[2]": "Gyro",
+      "/Shuffleboard/Swerve Drive/Field": "Field2d",
+      "/Shuffleboard/Swerve Drive/Gyro": "Gyro",
       "/SmartDashboard/SendableChooser[0]": "String Chooser"
+    },
+    "windows": {
+      "/SmartDashboard/SendableChooser[0]": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
     "Shuffleboard": {
       "Drivetrain": {
+        "open": true
+      },
+      "open": true
+    },
+    "SmartDashboard": {
+      "SendableChooser[0]": {
         "open": true
       },
       "open": true

@@ -4,9 +4,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.Vector2d;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -20,6 +27,8 @@ import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveDrive;
+
+import java.util.Map;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -58,6 +67,8 @@ public class Robot extends TimedRobot {
 	public static PathPlannerFollower corner4FiveBall1;
 	public static PathPlannerFollower corner4FiveBall2;
 	public static PathPlannerFollower corner4FiveBall3;
+
+	private static Field2d myField = new Field2d();
 
 	@Override
 	public void robotInit() {
@@ -112,6 +123,21 @@ public class Robot extends TimedRobot {
 		sendableChooser.addOption("NO AUTON (MUST BE STRAIGHT ALIGNED)", Auton.NO_OP);
 
 		SmartDashboard.putData(sendableChooser);
+
+		Sendable myGyroWithOffset = new Sendable(){
+			@Override
+			public void initSendable(SendableBuilder builder) {
+				builder.setSmartDashboardType("Gyro");
+				builder.addDoubleProperty("Value", () -> swerveDrive.getGyroHeading().getDegrees(), null);
+			}
+		};
+
+		Shuffleboard.getTab("Swerve Drive")
+						.add("Gyro", myGyroWithOffset)
+						.withProperties(Map.of("Counter clockwise", true));
+
+		Shuffleboard.getTab("Swerve Drive")
+						.add("Field", myField);
 	}
 	
 
@@ -129,6 +155,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void disabledPeriodic() {
+		log();
 	}
 
 	@Override
@@ -224,29 +251,31 @@ public class Robot extends TimedRobot {
 
 		if (logCounter > 5) {
 
-			SmartDashboard.putNumber("Encoder Voltage", RobotMap.m_climbEncoder.getVoltage());
-			SmartDashboard.putBoolean("L1 switch 1", RobotMap.m_l1Switch.get());
-			SmartDashboard.putBoolean("L1 switch 2", RobotMap.m_h2Switch.get());
-			SmartDashboard.putBoolean("L3 switch 1", RobotMap.m_l3Switch.get());
-			SmartDashboard.putBoolean("L3 switch 2", RobotMap.m_h4Switch.get());
-			SmartDashboard.putNumber("Gyro", swerveDrive.getGyroHeading().getRadians());
+			SmartDashboard.putNumber("Climber/Encoder Voltage", RobotMap.m_climbEncoder.getVoltage());
+			SmartDashboard.putBoolean("Climber/L1 switch 1", RobotMap.m_l1Switch.get());
+			SmartDashboard.putBoolean("Climber/L1 switch 2", RobotMap.m_h2Switch.get());
+			SmartDashboard.putBoolean("Climber/L3 switch 1", RobotMap.m_l3Switch.get());
+			SmartDashboard.putBoolean("Climber/L3 switch 2", RobotMap.m_h4Switch.get());
+			SmartDashboard.putNumber("Swerve Drive/Gyro", swerveDrive.getGyroHeading().getRadians());
 
-			SmartDashboard.putNumber("tx (inverted)", RobotMap.limelight.getHorizontalAngleOffset().getDegrees());
-			SmartDashboard.putNumber("distance", RobotMap.limelight.getDistance());
+			SmartDashboard.putNumber("Limelight/tx (inverted)", RobotMap.limelight.getHorizontalAngleOffset().getDegrees());
+			SmartDashboard.putNumber("Limelight/distance", RobotMap.limelight.getDistance());
 
 			//SmartDashboard.putNumber("Moving Target Angle Offset", RobotMap.limelight.getLimelightShootProjection().getOffset().getDegrees());
 			//SmartDashboard.putNumber("Moving Target Distance", RobotMap.limelight.getLimelightShootProjection().getDistance());
 
-			SmartDashboard.putNumber("Odometry X", swerveDrive.getSwerveDriveOdometry().getPoseMeters().getX());
-			SmartDashboard.putNumber("Odometry Y", swerveDrive.getSwerveDriveOdometry().getPoseMeters().getY());
+			SmartDashboard.putNumber("Swerve Drive/Odometry X", swerveDrive.getSwerveDriveOdometry().getPoseMeters().getX());
+			SmartDashboard.putNumber("Swerve Drive/Odometry Y", swerveDrive.getSwerveDriveOdometry().getPoseMeters().getY());
+
+			myField.setRobotPose(swerveDrive.getSwerveDriveOdometry().getPoseMeters());
 
 			Vector2d targetVectorVelocity = swerveDrive.getTargetOrientedVelocity();
 
-			SmartDashboard.putString("Target Velocity Vector", String.format("X: %.2f, Y: %.2f", targetVectorVelocity.x, targetVectorVelocity.y));
+			SmartDashboard.putString("Swerve Drive/Target Velocity Vector", String.format("X: %.2f, Y: %.2f", targetVectorVelocity.x, targetVectorVelocity.y));
 
-			SmartDashboard.putBoolean("Target Acquired", RobotMap.limelight.isTargetAcquired());
+			SmartDashboard.putBoolean("Limelight/Target Acquired", RobotMap.limelight.isTargetAcquired());
 
-			SmartDashboard.putNumber("Target Angle Error", swerveDrive.getTargetShootRotationAngleError().getDegrees());
+			SmartDashboard.putNumber("Swerve Drive/Target Angle Error", swerveDrive.getTargetShootRotationAngleError().getDegrees());
 
 			logCounter = 0;
 		}
